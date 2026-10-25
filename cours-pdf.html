@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LearnChild — Mes cours PDF</title>
+<style>
+:root{--blue:#2457c5;--pale:#eef4ff;--ink:#172033;--muted:#5b6475;--line:#dce3ef}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f6f8fc;color:var(--ink);line-height:1.5}
+header{background:var(--blue);color:#fff;padding:24px 16px}
+header h1{margin:0 0 6px;font-size:1.7rem}
+header p{margin:0}
+main{max-width:900px;margin:20px auto;padding:0 14px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 3px 12px #1720330a}
+h2{font-size:1.2rem;margin:0 0 12px}
+label{display:block;font-weight:700;margin:12px 0 5px}
+select,input,button{font:inherit}
+select,input[type=text]{width:100%;padding:12px;border:1px solid #bfc9da;border-radius:9px;background:#fff}
+input[type=file]{width:100%;padding:12px;border:1px dashed #9eacc2;border-radius:9px;background:#f9fbff}
+button{border:0;border-radius:9px;padding:11px 15px;background:var(--blue);color:white;font-weight:700;cursor:pointer;margin-top:12px}
+button.secondary{background:#e9eef8;color:#1b315d}
+.note{font-size:.92rem;color:var(--muted)}
+#status{margin-top:10px;color:#17633a}
+.course{border:1px solid var(--line);border-radius:10px;padding:12px;margin-top:10px}
+.course strong{display:block;overflow-wrap:anywhere}
+.course small{color:var(--muted)}
+.course button{margin-right:6px}
+#viewer{width:100%;height:65vh;border:1px solid var(--line);border-radius:9px;background:#fff}
+#aiResult{white-space:pre-wrap;background:var(--pale);padding:12px;border-radius:9px;min-height:48px}
+footer{text-align:center;color:var(--muted);padding:18px;font-size:.85rem}
+</style>
+</head>
+<body>
+<header>
+  <h1>LearnChild</h1>
+  <p>Mes cours PDF — de la maternelle à la Terminale</p>
+</header>
+<main>
+  <section class="card">
+    <h2>1. Ajouter un cours PDF</h2>
+    <p class="note">Choisis le niveau, la matière, puis sélectionne un fichier PDF sur ton téléphone.</p>
+    <label for="level">Niveau scolaire</label>
+    <select id="level">
+      <option>Maternelle</option><option>CP</option><option>CE1</option><option>CE2</option><option>CM1</option><option>CM2</option>
+      <option>6e</option><option>5e</option><option>4e</option><option>3e</option>
+      <option>Seconde</option><option>Première</option><option>Terminale</option>
+    </select>
+    <label for="subject">Matière</label>
+    <select id="subject">
+      <option>Français</option><option>Anglais</option><option>Mathématiques</option><option>Histoire-Géographie</option>
+      <option>SVT</option><option>Physique-Chimie</option><option>Philosophie</option><option>Allemand</option>
+      <option>EDHC</option><option>Éducation musicale</option><option>Arts plastiques</option><option>Autre</option>
+    </select>
+    <label for="file">Fichier PDF</label>
+    <input id="file" type="file" accept="application/pdf,.pdf">
+    <button id="add">Ajouter à ma liste</button>
+    <p id="status" role="status"></p>
+    <p class="note">Important : cette première version garde la liste et les fichiers uniquement pendant que cette page reste ouverte. Pour les conserver durablement et les partager avec les visiteurs, il faudra connecter un espace de stockage.</p>
+  </section>
+
+  <section class="card">
+    <h2>2. Mes cours classés</h2>
+    <label for="filterLevel">Filtrer par niveau</label>
+    <select id="filterLevel"><option value="">Tous les niveaux</option></select>
+    <label for="filterSubject">Filtrer par matière</label>
+    <select id="filterSubject"><option value="">Toutes les matières</option></select>
+    <div id="courses"><p class="note">Aucun cours ajouté pour le moment.</p></div>
+  </section>
+
+  <section class="card">
+    <h2>3. Lire un cours</h2>
+    <p class="note">Appuie sur « Lire le PDF » dans la liste pour l'afficher ici.</p>
+    <iframe id="viewer" title="Aperçu du cours PDF"></iframe>
+  </section>
+
+  <section class="card">
+    <h2>4. Explication par l'intelligence artificielle</h2>
+    <p>Cette fonction doit être connectée à un service d'intelligence artificielle pour analyser le contenu du PDF et créer une explication simple, des exemples, des exercices et leurs corrections.</p>
+    <p class="note">La page actuelle ne transmet pas tes documents à une IA et ne génère pas encore de réponses automatiques. Il faudra ajouter une connexion sécurisée à un service d'IA ; ne place jamais une clé secrète d'API dans ce fichier HTML public.</p>
+    <label for="question">Ce que tu veux comprendre</label>
+    <input id="question" type="text" placeholder="Ex. : Explique cette leçon simplement">
+    <button class="secondary" id="aiButton">Préparer ma demande</button>
+    <div id="aiResult" aria-live="polite">La demande sera prête à connecter à l'IA dans une prochaine étape.</div>
+  </section>
+</main>
+<footer>LearnChild — apprendre simplement, à chaque niveau.</footer>
+<script>
+const levels=['Maternelle','CP','CE1','CE2','CM1','CM2','6e','5e','4e','3e','Seconde','Première','Terminale'];
+const subjects=['Français','Anglais','Mathématiques','Histoire-Géographie','SVT','Physique-Chimie','Philosophie','Allemand','EDHC','Éducation musicale','Arts plastiques','Autre'];
+const levelFilter=document.getElementById('filterLevel');
+const subjectFilter=document.getElementById('filterSubject');
+levels.forEach(v=>levelFilter.add(new Option(v,v)));
+subjects.forEach(v=>subjectFilter.add(new Option(v,v)));
+let courses=[];
+let currentUrl=null;
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function render(){
+ const list=document.getElementById('courses');
+ const filtered=courses.filter(c=>(!levelFilter.value||c.level===levelFilter.value)&&(!subjectFilter.value||c.subject===subjectFilter.value));
+ if(!filtered.length){list.innerHTML='<p class="note">Aucun cours ne correspond à ce filtre.</p>';return;}
+ list.innerHTML=filtered.map(c=>`<div class="course"><strong>${esc(c.name)}</strong><small>${esc(c.level)} · ${esc(c.subject)} · ${(c.size/1024/1024).toFixed(2)} Mo</small><br><button data-read="${c.id}">Lire le PDF</button><button class="secondary" data-remove="${c.id}">Retirer</button></div>`).join('');
+ list.querySelectorAll('[data-read]').forEach(b=>b.onclick=()=>{const c=courses.find(x=>x.id===b.dataset.read);if(c){if(currentUrl)URL.revokeObjectURL(currentUrl);currentUrl=URL.createObjectURL(c.file);document.getElementById('viewer').src=currentUrl;document.getElementById('viewer').scrollIntoView({behavior:'smooth',block:'start'});}});
+ list.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>{courses=courses.filter(x=>x.id!==b.dataset.remove);render();});
+}
+document.getElementById('add').addEventListener('click',()=>{
+ const input=document.getElementById('file'), f=input.files[0], status=document.getElementById('status');
+ if(!f){status.textContent='Sélectionne d’abord un fichier PDF.';return;}
+ if(!(f.type==='application/pdf'||f.name.toLowerCase().endsWith('.pdf'))){status.textContent='Choisis un fichier PDF.';return;}
+ courses.push({id:String(Date.now())+Math.random().toString(16).slice(2),name:f.name,level:document.getElementById('level').value,subject:document.getElementById('subject').value,size:f.size,file:f});
+ input.value='';status.textContent='Cours ajouté à la liste de cette session.';render();
+});
+levelFilter.addEventListener('change',render);subjectFilter.addEventListener('change',render);
+document.getElementById('aiButton').addEventListener('click',()=>{
+ const q=document.getElementById('question').value.trim();
+ document.getElementById('aiResult').textContent=q?'Demande préparée : « '+q+' ». La connexion sécurisée à un service d’IA reste à installer avant de pouvoir analyser le PDF et produire une réponse.':'Écris d’abord ce que tu veux comprendre.';
+});
+</script>
+</body>
+</html>
